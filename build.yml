@@ -1,0 +1,13 @@
+# Builds hook.dylib on GitHub's free macOS runners, so you don't need a Mac.
+name: build-hook
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: make
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hook.dylib
+          path: build/hook.dylib
