@@ -1,4 +1,3 @@
-# Builds hook.dylib on GitHub's free macOS runners, so you don't need a Mac.
 name: build-hook
 on: [push, workflow_dispatch]
 jobs:
@@ -6,7 +5,23 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - run: make
+      - name: Build hook.dylib
+        run: |
+          SRC=$(find . -name hook.mm -not -path './.git/*' | head -1)
+          if [ -z "$SRC" ]; then
+            echo "hook.mm not found. Files in repo:"
+            find . -not -path './.git/*' -type f
+            exit 1
+          fi
+          echo "Building $SRC"
+          mkdir -p build
+          xcrun --sdk iphoneos clang++ \
+            -arch arm64 \
+            -isysroot "$(xcrun --sdk iphoneos --show-sdk-path)" \
+            -miphoneos-version-min=13.0 -std=c++17 -O2 -fobjc-arc \
+            -dynamiclib -framework Foundation -framework UIKit \
+            -install_name @executable_path/Frameworks/hook.dylib \
+            "$SRC" -o build/hook.dylib
       - uses: actions/upload-artifact@v4
         with:
           name: hook.dylib
