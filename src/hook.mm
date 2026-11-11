@@ -7,7 +7,7 @@
 #include <mach-o/loader.h>
 #include <stdint.h>
 #include <string.h>
-
+// e
 // ---------------------------------------------------------------------------
 // Noclip flag. tools/noclip_patch.py writes a small header into the end of the
 // __TEXT segment that tells us where the flag byte lives. No header = no patch.
